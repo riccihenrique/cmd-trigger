@@ -37,6 +37,10 @@ app.use(bodyParser.json());
 
 app.get('/login');
 
+app.get('/ping', (_, res) => {
+    res.end();
+});
+
 app.post('/exec', (req, res) => {
     console.log('eae');
     const { cmd, user } = req.body;
