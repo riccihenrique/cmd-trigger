@@ -2,9 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const app = express();
-const http = require('http').createServer(app);
-
-const io = require('socket.io')(http);
 
 const usersOnline = {};
 
@@ -30,9 +27,7 @@ const server = net.createServer((conn) => {
   });
 });
 
-server.listen(8080, () => {
-  console.log('Servidor escutando na porta 8080');
-});
+
 app.use(bodyParser.json());
 
 app.get('/login');
@@ -45,8 +40,10 @@ app.post('/exec', (req, res) => {
     console.log('eae');
     const { cmd, user } = req.body;
     usersOnline[user] && usersOnline[user].conn.write(JSON.stringify({ type: 'cmd', cmd }));
-
+    
     res.end();
 });
-
+server.listen(process.env.PORT || 3000, () => {
+  console.log('Servidor escutando na porta 8080');
+});
 app.listen(process.env.PORT || 3000);
