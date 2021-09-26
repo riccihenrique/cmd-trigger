@@ -46,4 +46,3 @@ app.post('/exec', (req, res) => {
 server.listen(process.env.PORT || 3000, () => {
   console.log('Servidor escutando na porta 8080');
 });
-app.listen(process.env.PORT || 3000);
