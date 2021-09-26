@@ -1,36 +1,48 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const http = require('http').createServer(app);
-
-const io = require('socket.io')(http, {
-    cors: {
-        origin: '*',
-        methods: ['GET', 'POST'],
-    }
-});
 
 const app = express();
+const http = require('http').createServer(app);
+
+const io = require('socket.io')(http);
 
 const usersOnline = {};
 
-io.on('connection', (socket) => {
-    socket.on('name', (name) => {
-        usersOnline[name] = { id: socket.id, socket };
-    });
+const net = require('net');
 
-    socket.on('disconnect', () => {
-        delete usersOnline[Object.entries(usersOnline).filter(([key, { id }]) => id === socket.id)[0][0]];
-    });
+const server = net.createServer((conn) => {
+  console.log('Cliente conectado');
+
+  conn.on('end', () => {
+    console.log('Cliente desconectado');
+  });
+
+  conn.on('data', (data) => {
+        data = JSON.parse(data);
+        const { type } = data;
+    
+        switch (type) {
+            case 'name':
+                const { name } = data;
+                usersOnline[name] = { conn };
+            break;
+        }
+  });
 });
 
-app.use(bodyParser());
+server.listen(8080, () => {
+  console.log('Servidor escutando na porta 8080');
+});
+app.use(bodyParser.json());
 
 app.get('/login');
 
 app.post('/exec', (req, res) => {
+    console.log('eae');
     const { cmd, user } = req.body;
+    usersOnline[user] && usersOnline[user].conn.write(JSON.stringify({ type: 'cmd', cmd }));
 
-    usersOnline[user] && usersOnline[user].socket.emit('cmd', cmd);
+    res.end();
 });
 
 app.listen(process.env.PORT || 3000);
