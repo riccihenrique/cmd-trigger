@@ -15,28 +15,7 @@ const server = net.createServer((conn) => {
     });
     
     conn.on('data', (data) => { 
-        try {
-            data = JSON.parse(data);
-        }
-        catch(ex) {
-            let req = data.toString().split('\n')[0];
-
-            if (req.startsWith('GET')) {
-                req = req.substring(6).split(' ')[0].replace(/&/g, '=').split('=');
-                data = {};
-                for(let i = 0; i < req.length; i += 2) {
-                    data[req[i]] = req[i + 1];
-                }
-                data.type = 'cmd';
-                console.log(data);
-            }
-            else {
-                throw {
-                    error: 'request inválido',
-                }
-            }            
-        }
-
+        data = JSON.parse(data);
         const { type } = data;
         
         switch (type) {
