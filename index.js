@@ -30,6 +30,7 @@ app.get('/ping', (_, res) => {
 });
 
 app.get('/cmd', (req, res) => {
+    console.log(req.query);
     const { user, cmd } = req.query;
     usersOnline[user] && usersOnline[user].conn.write(JSON.stringify({ type: 'cmd', cmd }));
     res.end();
