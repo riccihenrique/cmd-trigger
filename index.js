@@ -44,14 +44,22 @@ const server = net.createServer((conn) => {
                 const { name } = data;
                 usersOnline[name] = { conn };
             break;
-            case 'cmd':
-                const { user, cmd } = data;
-                usersOnline[user] && usersOnline[user].conn.write(JSON.stringify({ type: 'cmd', cmd }));
-            break;
         }
     });
 });
 
-server.listen(process.env.PORT || 3000, () => {
-    console.log('Servidor escutando na porta ' + (process.env.PORT || 3000));
+
+app.use(bodyParser.json());
+
+app.get('/ping', (_, res) => {
+    res.end();
 });
+
+app.post('/cmd', (req, res) => {
+    const { user, cmd } = req.body;
+    usersOnline[user] && usersOnline[user].conn.write(JSON.stringify({ type: 'cmd', cmd }));
+    res.end();
+});
+
+server.listen(8080);
+app.listen(80);
